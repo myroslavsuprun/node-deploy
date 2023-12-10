@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    container_name: node-deploy-server
+    volumes:
+      - ./src:/app/src
+    environment:
+      - .env
+      - PORT=3001
+      - REDIS_URL=redis://cache:6379
+    ports:
+      - "3001:3001"
+    command: bash -c "npm run start:dev"
+    networks:
+      - main
+
+  cache:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - main
+
+networks:
+  main:
+    driver: bridge
